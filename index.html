@@ -102,7 +102,9 @@ gap:10px;
 <button class="calculate" onclick="calculate()">
 CALCULATE
 </button>
-
+<button onclick="resetCalculator()">
+RESET CALCULATOR
+</button>
 </div>
 
 <div class="stats">
@@ -142,7 +144,9 @@ WIN TRADE
 <button class="loss" onclick="addLoss()">
 LOSS TRADE
 </button>
-
+<button onclick="resetPerformance()">
+RESET PERFORMANCE
+</button>
 </div>
 
 <div class="card">
@@ -244,7 +248,26 @@ document.getElementById("losses").innerHTML=
 
 document.getElementById("winrate").innerHTML=
 "Win Rate: "+rate+"%";
+function resetCalculator(){
+    document.getElementById("balance").value="";
+    document.getElementById("risk").value="";
+    document.getElementById("rr").value="";
 
+    document.getElementById("riskAmount").innerHTML="Risk Amount: $0";
+    document.getElementById("takeProfit").innerHTML="Take Profit: $0";
+    document.getElementById("dailyLoss").innerHTML="Daily Loss Limit: $0";
+    document.getElementById("dailyTarget").innerHTML="Daily Target: $0";
+}
+
+function resetPerformance(){
+    wins=0;
+    losses=0;
+
+    localStorage.setItem("wins",0);
+    localStorage.setItem("losses",0);
+
+    updateStats();
+}
 }
 
 </script>
