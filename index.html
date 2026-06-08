@@ -1,276 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TRADER BY RB PRO DASHBOARD</title>
-
-<style>
 body{
-font-family:Arial,sans-serif;
-background:#111;
-color:#fff;
-padding:15px;
+    font-family:Arial,sans-serif;
+    color:white;
+    padding:15px;
+
+    background-image:url('A_3D-rendered_digital_logo_for_financial_trader_RB (3).png');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
 }
 
 h1{
-text-align:center;
+    text-align:center;
 }
 
 .container{
-max-width:800px;
-margin:auto;
+    max-width:800px;
+    margin:auto;
 }
 
 .card{
-background:#1e1e1e;
-padding:15px;
-margin:10px 0;
-border-radius:12px;
+    background:rgba(0,0,0,0.75);
+    padding:15px;
+    margin-top:15px;
+    border-radius:15px;
+    backdrop-filter:blur(4px);
 }
 
 input{
-width:100%;
-padding:10px;
-margin-top:5px;
-margin-bottom:10px;
-border:none;
-border-radius:8px;
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:10px;
+    border-radius:8px;
+    border:none;
 }
 
 button{
-width:100%;
-padding:12px;
-border:none;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:18px;
+    margin-top:8px;
 }
 
 .calculate{
-background:#00b894;
-color:white;
+    background:#14b89a;
+    color:white;
+}
+
+.resetCalc{
+    background:#ff9800;
+    color:white;
+}
+
+.resetStats{
+    background:#e53935;
+    color:white;
 }
 
 .win{
-background:#00c853;
-color:white;
-margin-top:10px;
+    background:#00c853;
+    color:white;
 }
 
 .loss{
-background:#d50000;
-color:white;
-margin-top:10px;
+    background:#d50000;
+    color:white;
 }
 
 .box{
-padding:15px;
-border-radius:10px;
-margin-top:10px;
-font-weight:bold;
+    padding:15px;
+    border-radius:10px;
+    font-weight:bold;
+    font-size:18px;
 }
 
-.green{background:#00c853;}
-.red{background:#d50000;}
-.yellow{background:#ffab00;color:black;}
-
-.stats{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
 }
-</style>
-</head>
-<body>
 
-<div class="container">
+.green{
+    background:#00c853;
+}
 
-<h1>TRADER BY RB</h1>
+.red{
+    background:#d50000;
+}
 
-<div class="card">
-
-<label>Starting Balance ($)</label>
-<input type="number" id="balance">
-
-<label>Risk Per Trade (%)</label>
-<input type="number" id="risk" value="2">
-
-<label>Risk Reward Ratio (RR)</label>
-<input type="number" id="rr" value="2">
-
-<button class="calculate" onclick="calculate()">
+.yellow{
+    background:#ffb300;
+    color:black;
+}<button class="calculate" onclick="calculate()">
 CALCULATE
 </button>
-<button onclick="resetCalculator()">
+
+<button class="resetCalc" onclick="resetCalculator()">
 RESET CALCULATOR
-</button>
-</div>
-
-<div class="stats">
-
-<div class="box green" id="riskAmount">
-Risk Amount: $0
-</div>
-
-<div class="box yellow" id="takeProfit">
-Take Profit: $0
-</div>
-
-<div class="box red" id="dailyLoss">
-Daily Loss Limit: $0
-</div>
-
-<div class="box green" id="dailyTarget">
-Daily Target: $0
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Performance</h3>
-
-<div id="wins">Wins: 0</div>
-<div id="losses">Losses: 0</div>
-<div id="winrate">Win Rate: 0%</div>
-
-<br>
-
-<button class="win" onclick="addWin()">
+</button><button class="win" onclick="addWin()">
 WIN TRADE
 </button>
 
 <button class="loss" onclick="addLoss()">
 LOSS TRADE
 </button>
-<button onclick="resetPerformance()">
+
+<button class="resetStats" onclick="resetStats()">
 RESET PERFORMANCE
-</button>
-</div>
+</button>function resetCalculator(){
 
-<div class="card">
+document.getElementById("balance").value="";
+document.getElementById("risk").value="";
+document.getElementById("rr").value="";
 
-<h3>Account Status</h3>
-<div id="health">
-Waiting...
-</div>
+document.getElementById("riskAmount").innerHTML="Risk Amount: $0";
+document.getElementById("takeProfit").innerHTML="Take Profit: $0";
+document.getElementById("dailyLoss").innerHTML="Daily Loss Limit: $0";
+document.getElementById("dailyTarget").innerHTML="Daily Target: $0";
+}
 
-</div>
+function resetStats(){
 
-</div>
+wins=0;
+losses=0;
 
-<script>
-
-let wins=localStorage.getItem("wins")||0;
-let losses=localStorage.getItem("losses")||0;
+localStorage.setItem("wins",0);
+localStorage.setItem("losses",0);
 
 updateStats();
-
-function calculate(){
-
-let balance=
-parseFloat(document.getElementById("balance").value)||0;
-
-let risk=
-parseFloat(document.getElementById("risk").value)||0;
-
-let rr=
-parseFloat(document.getElementById("rr").value)||0;
-
-let riskAmount=
-(balance*risk)/100;
-
-let takeProfit=
-riskAmount*rr;
-
-let dailyLoss=
-balance*0.05;
-
-let dailyTarget=
-balance*0.10;
-
-document.getElementById("riskAmount").innerHTML=
-"Risk Amount: $" + riskAmount.toFixed(2);
-
-document.getElementById("takeProfit").innerHTML=
-"Take Profit: $" + takeProfit.toFixed(2);
-
-document.getElementById("dailyLoss").innerHTML=
-"Daily Loss Limit: $" + dailyLoss.toFixed(2);
-
-document.getElementById("dailyTarget").innerHTML=
-"Daily Target: $" + dailyTarget.toFixed(2);
-
-if(risk<=2){
-document.getElementById("health").innerHTML=
-"SAFE ACCOUNT ✅";
 }
-else if(risk<=5){
-document.getElementById("health").innerHTML=
-"MODERATE RISK ⚠️";
-}
-else{
-document.getElementById("health").innerHTML=
-"DANGER ZONE ❌";
-}
-
-}
-
-function addWin(){
-wins++;
-localStorage.setItem("wins",wins);
-updateStats();
-}
-
-function addLoss(){
-losses++;
-localStorage.setItem("losses",losses);
-updateStats();
-}
-
-function updateStats(){
-
-let total=
-Number(wins)+Number(losses);
-
-let rate=0;
-
-if(total>0){
-rate=((wins/total)*100).toFixed(2);
-}
-
-document.getElementById("wins").innerHTML=
-"Wins: "+wins;
-
-document.getElementById("losses").innerHTML=
-"Losses: "+losses;
-
-document.getElementById("winrate").innerHTML=
-"Win Rate: "+rate+"%";
-function resetCalculator(){
-    document.getElementById("balance").value="";
-    document.getElementById("risk").value="";
-    document.getElementById("rr").value="";
-
-    document.getElementById("riskAmount").innerHTML="Risk Amount: $0";
-    document.getElementById("takeProfit").innerHTML="Take Profit: $0";
-    document.getElementById("dailyLoss").innerHTML="Daily Loss Limit: $0";
-    document.getElementById("dailyTarget").innerHTML="Daily Target: $0";
-}
-
-function resetPerformance(){
-    wins=0;
-    losses=0;
-
-    localStorage.setItem("wins",0);
-    localStorage.setItem("losses",0);
-
-    updateStats();
-}
-}
-
-</script>
-
-</body>
-</html>
